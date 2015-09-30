@@ -29,35 +29,50 @@ def make_chains(text_string):
 
     chains = {}
 
-    green_all_words = text_string.split(' ') # splitting string by space in text_string assiged as geen_all_words
+    stripped_words = text_string.replace('\n', ' ')
+    stripped_questionmark_words = stripped_words.replace('?', '')
+    green_all_words = stripped_questionmark_words.split(' ') # splitting string by space in text_string assiged as geen_all_words
+    
+
     for i in range(len(green_all_words)-2):  # created for loop to get the range and leangth of green_all_words 
-        current_key = (green_all_words[i], green_all_words[i+1])
+        current_key = (green_all_words[i], green_all_words[i+1])  # tuples we assigned to var current keys when it iterates through loop add index of word 
         current_value = green_all_words[i+2]
 
-        # print "CURRENT KEY: " + str(current_key)
-        if current_key in chains:
-            # print"found"
-            # print "current:" + str(chains[current_key])
-            chains[current_key].append(current_value)
+        if current_key in chains:  #looping through dic chains for current keys which are tuples
+            chains[current_key].append(current_value) # if current values are found in chains append vales to dic keys 
         else:
-            # print "not in here"
             chains[current_key] = [current_value]
-    print chains
 
     return chains
 
 chains = make_chains(input_text)
 
-# def make_text(chains):
-#     """Takes dictionary of markov chains; returns random text."""
+def make_text(chains):
+    """Takes dictionary of markov chains; returns random text."""
 
-#     text = ""
+    text = ""
+    chosen_key = choice(chains.keys())
+    text = chosen_key[0] + ' ' + chosen_key[1] + ' '
+    
+    for i in range(30):  
+        # generating our random word
+        options = chains[chosen_key]
+        chosen_word = choice(options)
+        # word #2 from our tuple and new random word, combine them
+         # creating our text that will print in the end
+        text = text + ' ' + chosen_word
+        chosen_key = (chosen_key[1], chosen_word)
+        
 
-#     # your code goes here
-
-#     return text
+    return text
 
 
+
+
+
+random_text = make_text(chains)
+
+print random_text
 # input_path = "green-eggs.txt"
 
 # Open the file and turn it into one long string
