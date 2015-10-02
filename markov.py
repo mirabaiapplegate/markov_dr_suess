@@ -1,24 +1,42 @@
 from random import choice
+from sys import argv
+import os
+import twitter
 
+file_name_1 = argv[1]
+file_name_2 = argv[2]
 
 # opening file 
-file_path = open("green-eggs.txt")
+file_object_1 = open(file_name_1)
+file_object_2 = open(file_name_2)
+
+api = twitter.Api(
+    consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
+    consumer_secret=os.environ["TWITTER_CONSUMER_SECRET"],
+    access_token_key=os.environ["TWITTER_ACCESS_TOKEN_KEY"],
+    access_token_secret=os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
+    )
+
+# print api.VerifyCredentials()
 
 
-def open_and_read_file(file_path):
+def open_and_read_file(file_object_1, file_object_2):
     """Takes file path as string; returns text as string.
 
     Takes a string that is a file path, opens the file, and turns
     the file's contents as one string of text.
     """
     # reading our file
-    green_text = file_path.read()
+    green_text = file_object_1.read()
+    text_2 = file_object_2.read()
+    green_text = green_text + ' ' + text_2
 
     # returning text from file
     return green_text
 
 # calling the above function and binding its' output to the variable input_text
-input_text = open_and_read_file(file_path)
+input_text = open_and_read_file(file_object_1, file_object_2)
+
 
 def make_chains(text_string):
     """Takes input text as string; returns dictionary of markov chains.
@@ -63,9 +81,10 @@ def make_chains(text_string):
         # as its initial item in list ('could')
         else:
             chains[current_key] = [current_value]
-    #returns our dictionary named chains
+    #returns our dictionray named chains
     return chains
 #calling this function and assigning its result to chains.
+
 chains = make_chains(input_text)
 
 
@@ -73,6 +92,7 @@ def make_text(chains):
     """Takes dictionary of markov chains; returns random text."""
     # making a blank string
     text = ""
+
     # getting our random tuple(chosen_key)
     chosen_key = choice(chains.keys())
     # creating our string
@@ -81,7 +101,9 @@ def make_text(chains):
     
     # looping over our dictionary until until all our tuples are used in above text, then returns None
     # otherwise its infinite.
-    while chains.get(chosen_key, None): 
+    while chains.get(chosen_key, None):
+        if len(text) >= 120: 
+            break
         # generating list associated with tuple(chosen_key)
         options = chains[chosen_key]
         # generating our random word from the list(options)
@@ -91,11 +113,15 @@ def make_text(chains):
         # assigning new tuple(chosen_key) for next loop cycle
         chosen_key = (chosen_key[1], chosen_word)
 
-    #returning our text
+    
+    # returning our text
     return text
 
-#calling our function, and assigning what it returns to random_text
+# calling our function, and assigning what it returns to random_text
 random_text = make_text(chains)
+status = api.PostUpdate(random_text)
 
-#printing our markov chain!
-print random_text
+print status.text
+# printing our markov chain!
+# print random_text 
+# print len(random_text)
