@@ -17,8 +17,6 @@ api = twitter.Api(
     access_token_secret=os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
     )
 
-# print api.VerifyCredentials()
-
 
 def open_and_read_file(file_object_1, file_object_2):
     """Takes file path as string; returns text as string.
